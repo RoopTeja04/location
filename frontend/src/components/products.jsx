@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import axios from "axios";
 
 const Products = () => {
@@ -22,174 +23,393 @@ const Products = () => {
     }, []);
 
     const handleViewMore = (categoryId) => {
-        // Add your view more logic here
         console.log(`View more for category: ${categoryId}`);
-        // You can navigate to a detailed page or expand the section
     };
 
+    // Animation variants
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                duration: 0.6,
+                staggerChildren: 0.2
+            }
+        }
+    };
+
+    const categoryVariants = {
+        hidden: {
+            opacity: 0,
+            y: 50,
+            scale: 0.95
+        },
+        visible: {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            transition: {
+                duration: 0.8,
+                ease: [0.25, 0.46, 0.45, 0.94],
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const cardVariants = {
+        hidden: {
+            opacity: 0,
+            y: 30,
+            rotateX: -15,
+            scale: 0.9
+        },
+        visible: {
+            opacity: 1,
+            y: 0,
+            rotateX: 0,
+            scale: 1,
+            transition: {
+                duration: 0.6,
+                ease: "easeOut"
+            }
+        },
+        hover: {
+            y: -8,
+            scale: 1.03,
+            rotateY: 5,
+            transition: {
+                duration: 0.3,
+                ease: "easeOut"
+            }
+        }
+    };
+
+    const imageVariants = {
+        hover: {
+            scale: 1.1,
+            rotate: 2,
+            transition: {
+                duration: 0.4,
+                ease: "easeInOut"
+            }
+        }
+    };
+
+    const buttonVariants = {
+        hover: {
+            scale: 1.05,
+            boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)",
+            transition: {
+                duration: 0.2
+            }
+        },
+        tap: {
+            scale: 0.95
+        }
+    };
+
+    // Loading animation
     if (loading) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '200px',
-                fontSize: '18px',
-                color: '#666'
-            }}>
+            <motion.div
+                className="flex justify-center items-center h-50 text-lg text-gray-600"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{
+                    opacity: 1,
+                    scale: 1,
+                    transition: { duration: 0.5 }
+                }}
+            >
+                <motion.div
+                    animate={{
+                        rotate: 360,
+                        transition: {
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "linear"
+                        }
+                    }}
+                    className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mr-3"
+                />
                 Loading...
-            </div>
+            </motion.div>
         );
     }
 
     return (
-        <div style={{
-            padding: '20px',
-            backgroundColor: '#f8f9fa',
-            minHeight: '100vh'
-        }}>
+        <motion.div
+            className="p-5 bg-gray-50 min-h-screen"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+        >
+            <AnimatePresence>
+                {productsData.map((category, categoryIndex) => (
+                    <CategoryCard
+                        key={category._id}
+                        category={category}
+                        categoryIndex={categoryIndex}
+                        handleViewMore={handleViewMore}
+                        categoryVariants={categoryVariants}
+                        cardVariants={cardVariants}
+                        imageVariants={imageVariants}
+                        buttonVariants={buttonVariants}
+                    />
+                ))}
+            </AnimatePresence>
+        </motion.div>
+    );
+};
 
-            {productsData.map((category) => (
-                <div key={category._id} style={{
-                    marginBottom: '50px',
-                    backgroundColor: 'white',
-                    borderRadius: '15px',
-                    padding: '30px',
-                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-                }}>
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '20px'
-                    }}>
-                        <h3 style={{
-                            fontSize: '1.8rem',
-                            color: '#333',
-                            margin: '0',
-                            fontWeight: '500'
-                        }}>
-                            {category.name}
-                            <span style={{
-                                fontSize: '1rem',
-                                color: '#666',
-                                fontWeight: '400',
-                                marginLeft: '10px'
-                            }}>
-                                ({category.type})
-                            </span>
-                        </h3>
+// Separate component for each category to optimize animations
+const CategoryCard = ({
+    category,
+    categoryIndex,
+    handleViewMore,
+    categoryVariants,
+    cardVariants,
+    imageVariants,
+    buttonVariants
+}) => {
+    const ref = React.useRef(null);
+    const isInView = useInView(ref, { once: true, amount: 0.2 });
 
-                        {category.items.length > 5 && (
-                            <button
-                                onClick={() => handleViewMore(category._id)}
-                                style={{
-                                    backgroundColor: '#007bff',
-                                    color: 'white',
-                                    border: 'none',
-                                    padding: '8px 16px',
-                                    borderRadius: '20px',
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                    fontWeight: '500',
-                                    transition: 'all 0.3s ease'
+    return (
+        <motion.div
+            ref={ref}
+            className="mb-12 bg-white rounded-2xl p-8 shadow-md overflow-hidden"
+            variants={categoryVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            style={{
+                background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(249,250,251,1) 100%)'
+            }}
+            whileHover={{
+                boxShadow: "0 25px 50px rgba(0, 0, 0, 0.15)",
+                transition: { duration: 0.3 }
+            }}
+        >
+            {/* Header Animation */}
+            <motion.div
+                className="flex justify-between items-center mb-5"
+                variants={{
+                    hidden: { opacity: 0, x: -30 },
+                    visible: {
+                        opacity: 1,
+                        x: 0,
+                        transition: { delay: categoryIndex * 0.1 }
+                    }
+                }}
+            >
+                <motion.h3
+                    className="text-3xl text-gray-800 m-0 font-medium"
+                    whileHover={{
+                        scale: 1.05,
+                        color: "#3b82f6",
+                        transition: { duration: 0.2 }
+                    }}
+                >
+                    <motion.span
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: categoryIndex * 0.1 + 0.2 }}
+                    >
+                        {category.name}
+                    </motion.span>
+                    <motion.span
+                        className="text-base text-gray-600 font-normal ml-2.5"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: categoryIndex * 0.1 + 0.4 }}
+                    >
+                        ({category.type})
+                    </motion.span>
+                </motion.h3>
+
+                {category.items.length > 5 && (
+                    <motion.button
+                        onClick={() => handleViewMore(category._id)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white border-none px-4 py-2 rounded-full text-sm cursor-pointer font-medium transition-all duration-300 ease-in-out"
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: categoryIndex * 0.1 + 0.6 }}
+                    >
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: categoryIndex * 0.1 + 0.8 }}
+                        >
+                            View More
+                        </motion.span>
+                        <motion.span
+                            className="ml-2"
+                            animate={{ x: [0, 5, 0] }}
+                            transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                repeatType: "reverse"
+                            }}
+                        >
+                            →
+                        </motion.span>
+                    </motion.button>
+                )}
+            </motion.div>
+
+            {/* Products Grid */}
+            <motion.div
+                className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 max-w-full"
+                variants={{
+                    hidden: {},
+                    visible: {
+                        transition: {
+                            staggerChildren: 0.1
+                        }
+                    }
+                }}
+            >
+                {category.items.slice(0, 5).map((item, index) => (
+                    <motion.div
+                        key={item._id}
+                        className="group border border-gray-300 rounded-xl p-4 bg-white shadow-md cursor-pointer relative overflow-hidden"
+                        variants={cardVariants}
+                        whileHover="hover"
+                        style={{
+                            background: 'linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)'
+                        }}
+                    >
+                        {/* Animated background on hover */}
+                        <motion.div
+                            className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-0"
+                            whileHover={{
+                                opacity: 1,
+                                transition: { duration: 0.3 }
+                            }}
+                        />
+
+                        {/* Image Container */}
+                        <motion.div
+                            className="w-full h-40 overflow-hidden rounded-lg mb-3 bg-gray-100 relative"
+                            whileHover={{
+                                boxShadow: "0 15px 35px rgba(0, 0, 0, 0.1)",
+                                transition: { duration: 0.3 }
+                            }}
+                        >
+                            <motion.img
+                                src={item.image}
+                                alt={item.name}
+                                className="w-full h-full object-cover rounded-lg"
+                                variants={imageVariants}
+                                whileHover="hover"
+                                loading="lazy"
+                                initial={{ scale: 1.1, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{
+                                    duration: 0.6,
+                                    delay: index * 0.1
                                 }}
-                                onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-                                onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+                            />
+
+                            {/* Shimmer effect during load */}
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0"
+                                animate={{
+                                    x: [-100, 300],
+                                    opacity: [0, 0.6, 0]
+                                }}
+                                transition={{
+                                    duration: 1.5,
+                                    delay: index * 0.2,
+                                    repeat: 1
+                                }}
+                            />
+                        </motion.div>
+
+                        {/* Content */}
+                        <div className="relative z-10">
+                            <motion.h4
+                                className="text-lg text-gray-800 mb-2 font-semibold leading-tight overflow-hidden text-ellipsis whitespace-nowrap"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 + 0.3 }}
+                                whileHover={{
+                                    color: "#3b82f6",
+                                    transition: { duration: 0.2 }
+                                }}
                             >
-                                View More
-                            </button>
-                        )}
-                    </div>
+                                {item.name}
+                            </motion.h4>
 
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                        gap: '20px',
-                        maxWidth: '100%'
-                    }}>
-                        {category.items.slice(0, 5).map((item) => (
-                            <div
-                                key={item._id}
-                                style={{
-                                    border: '1px solid #e0e0e0',
-                                    borderRadius: '12px',
-                                    padding: '15px',
-                                    backgroundColor: '#fff',
-                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                                    cursor: 'pointer'
+                            <motion.p
+                                className="text-sm text-gray-600 mb-3 leading-normal h-10 overflow-hidden line-clamp-2"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 + 0.4 }}
+                            >
+                                {item.description}
+                            </motion.p>
+
+                            <motion.p
+                                className="text-xl text-blue-600 m-0 font-bold"
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{
+                                    delay: index * 0.1 + 0.5,
+                                    type: "spring",
+                                    stiffness: 200
                                 }}
-                                onMouseOver={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-5px)';
-                                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.15)';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+                                whileHover={{
+                                    scale: 1.1,
+                                    color: "#1d4ed8",
+                                    transition: { duration: 0.2 }
                                 }}
                             >
-                                <div style={{
-                                    width: '100%',
-                                    height: '160px',
-                                    overflow: 'hidden',
-                                    borderRadius: '8px',
-                                    marginBottom: '12px',
-                                    backgroundColor: '#f5f5f5'
-                                }}>
-                                    <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'cover',
-                                            borderRadius: '8px'
-                                        }}
-                                    />
-                                </div>
+                                ₹{item.price}
+                            </motion.p>
+                        </div>
 
-                                <h4 style={{
-                                    fontSize: '1.1rem',
-                                    color: '#333',
-                                    margin: '0 0 8px 0',
-                                    fontWeight: '600',
-                                    lineHeight: '1.3',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap'
-                                }}>
-                                    {item.name}
-                                </h4>
+                        {/* Decorative corner element */}
+                        <motion.div
+                            className="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-0"
+                            whileHover={{
+                                opacity: 1,
+                                scale: [0, 1.2, 1],
+                                transition: { duration: 0.4 }
+                            }}
+                        />
+                    </motion.div>
+                ))}
+            </motion.div>
 
-                                <p style={{
-                                    fontSize: '0.9rem',
-                                    color: '#666',
-                                    margin: '0 0 12px 0',
-                                    lineHeight: '1.4',
-                                    height: '40px',
-                                    overflow: 'hidden',
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: 'vertical'
-                                }}>
-                                    {item.description}
-                                </p>
-
-                                <p style={{
-                                    fontSize: '1.2rem',
-                                    color: '#007bff',
-                                    margin: '0',
-                                    fontWeight: '700'
-                                }}>
-                                    ₹{item.price}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </div>
+            {/* Floating particles effect */}
+            <motion.div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                {[...Array(3)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute w-2 h-2 bg-blue-400 rounded-full opacity-20"
+                        animate={{
+                            x: [0, 100, 200, 300],
+                            y: [0, -50, -100, -150],
+                            opacity: [0, 0.5, 0.8, 0],
+                            scale: [0.5, 1, 1.5, 0.5]
+                        }}
+                        transition={{
+                            duration: 4,
+                            delay: i * 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                        style={{
+                            left: `${20 + i * 30}%`,
+                            top: `${80}%`
+                        }}
+                    />
+                ))}
+            </motion.div>
+        </motion.div>
     );
 };
 
