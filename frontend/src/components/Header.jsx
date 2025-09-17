@@ -13,6 +13,20 @@ const Header = () => {
                 <Link to="/">
                     <h1 className='text-white text-2xl m-2 font-semibold font-sans'>Priya Pickel</h1>
                 </Link>
+                <div className='flex'>
+                    <Link to="/">
+                        <h1 className='text-white text-xl m-2 font-semibold font-sans'>Home</h1>
+                    </Link>
+                    <Link to="/items">
+                        <h1 className='text-white text-xl m-2 font-semibold font-sans'>Items</h1>
+                    </Link>
+                    <Link to="/cart">
+                        <h1 className='text-white text-xl m-2 font-semibold font-sans'>Cart</h1>
+                    </Link>
+                    <Link to="/orders">
+                        <h1 className='text-white text-xl m-2 font-semibold font-sans'>Orders</h1>
+                    </Link>
+                </div>
 
                 {
                     !user ?

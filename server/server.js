@@ -19,7 +19,7 @@ app.get("/healthz", (req, res) => {
 
 // Routes
 app.use("/auth", require("./routes/authroutes"));
-app.use("/products", require("./routes/products"));
+app.use("/product", require("./routes/products"));
 
 mongoose
     .connect(process.env.MONGO_URL, {
