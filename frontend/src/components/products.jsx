@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import axios from "axios";
+import API from '../api/API';
 
 const Products = () => {
     const [productsData, setProductsData] = useState([]);
@@ -9,7 +9,7 @@ const Products = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get("http://localhost:5000/product");
+                const res = await API.get("/product");
                 if (res.status === 200) {
                     setProductsData(res.data.products);
                 }
@@ -112,7 +112,7 @@ const Products = () => {
     if (loading) {
         return (
             <motion.div
-                className="flex justify-center items-center h-50 text-lg text-gray-600"
+                className="flex justify-center items-center h-screen w-full text-lg text-gray-600"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{
                     opacity: 1,
@@ -138,25 +138,27 @@ const Products = () => {
 
     return (
         <motion.div
-            className="p-5 bg-gray-50 min-h-screen"
+            className="w-full min-h-screen bg-gray-50"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
         >
-            <AnimatePresence>
-                {productsData.map((category, categoryIndex) => (
-                    <CategoryCard
-                        key={category._id}
-                        category={category}
-                        categoryIndex={categoryIndex}
-                        handleViewMore={handleViewMore}
-                        categoryVariants={categoryVariants}
-                        cardVariants={cardVariants}
-                        imageVariants={imageVariants}
-                        buttonVariants={buttonVariants}
-                    />
-                ))}
-            </AnimatePresence>
+            <div className="w-full max-w-none px-6 py-8">
+                <AnimatePresence>
+                    {productsData.map((category, categoryIndex) => (
+                        <CategoryCard
+                            key={category._id}
+                            category={category}
+                            categoryIndex={categoryIndex}
+                            handleViewMore={handleViewMore}
+                            categoryVariants={categoryVariants}
+                            cardVariants={cardVariants}
+                            imageVariants={imageVariants}
+                            buttonVariants={buttonVariants}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
         </motion.div>
     );
 };
@@ -177,7 +179,7 @@ const CategoryCard = ({
     return (
         <motion.div
             ref={ref}
-            className="mb-12 bg-white rounded-2xl p-8 shadow-md overflow-hidden"
+            className="w-full mb-16 bg-white rounded-2xl px-8 py-10 shadow-md overflow-hidden"
             variants={categoryVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -191,7 +193,7 @@ const CategoryCard = ({
         >
             {/* Header Animation */}
             <motion.div
-                className="flex justify-between items-center mb-5"
+                className="flex justify-between items-center mb-8 w-full"
                 variants={{
                     hidden: { opacity: 0, x: -30 },
                     visible: {
@@ -202,7 +204,7 @@ const CategoryCard = ({
                 }}
             >
                 <motion.h3
-                    className="text-3xl text-gray-800 m-0 font-medium"
+                    className="text-4xl text-gray-800 m-0 font-medium"
                     whileHover={{
                         scale: 1.05,
                         color: "#3b82f6",
@@ -217,7 +219,7 @@ const CategoryCard = ({
                         {category.name}
                     </motion.span>
                     <motion.span
-                        className="text-base text-gray-600 font-normal ml-2.5"
+                        className="text-lg text-gray-600 font-normal ml-3"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: categoryIndex * 0.1 + 0.4 }}
@@ -229,7 +231,7 @@ const CategoryCard = ({
                 {category.items.length > 5 && (
                     <motion.button
                         onClick={() => handleViewMore(category._id)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white border-none px-4 py-2 rounded-full text-sm cursor-pointer font-medium transition-all duration-300 ease-in-out"
+                        className="bg-blue-600 hover:bg-blue-700 text-white border-none px-6 py-3 rounded-full text-base cursor-pointer font-medium transition-all duration-300 ease-in-out"
                         variants={buttonVariants}
                         whileHover="hover"
                         whileTap="tap"
@@ -259,9 +261,9 @@ const CategoryCard = ({
                 )}
             </motion.div>
 
-            {/* Products Grid */}
+            {/* Full Width Products Grid */}
             <motion.div
-                className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 max-w-full"
+                className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8"
                 variants={{
                     hidden: {},
                     visible: {
@@ -274,7 +276,7 @@ const CategoryCard = ({
                 {category.items.slice(0, 5).map((item, index) => (
                     <motion.div
                         key={item._id}
-                        className="group border border-gray-300 rounded-xl p-4 bg-white shadow-md cursor-pointer relative overflow-hidden"
+                        className="group border border-gray-300 rounded-xl p-6 bg-white shadow-md cursor-pointer relative overflow-hidden h-full flex flex-col"
                         variants={cardVariants}
                         whileHover="hover"
                         style={{
@@ -292,7 +294,7 @@ const CategoryCard = ({
 
                         {/* Image Container */}
                         <motion.div
-                            className="w-full h-40 overflow-hidden rounded-lg mb-3 bg-gray-100 relative"
+                            className="w-full h-48 overflow-hidden rounded-lg mb-4 bg-gray-100 relative"
                             whileHover={{
                                 boxShadow: "0 15px 35px rgba(0, 0, 0, 0.1)",
                                 transition: { duration: 0.3 }
@@ -328,10 +330,10 @@ const CategoryCard = ({
                             />
                         </motion.div>
 
-                        {/* Content */}
-                        <div className="relative z-10">
+                        {/* Content - Flexible grow */}
+                        <div className="relative z-10 flex-1 flex flex-col">
                             <motion.h4
-                                className="text-lg text-gray-800 mb-2 font-semibold leading-tight overflow-hidden text-ellipsis whitespace-nowrap"
+                                className="text-xl text-gray-800 mb-3 font-semibold leading-tight"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 + 0.3 }}
@@ -344,7 +346,7 @@ const CategoryCard = ({
                             </motion.h4>
 
                             <motion.p
-                                className="text-sm text-gray-600 mb-3 leading-normal h-10 overflow-hidden line-clamp-2"
+                                className="text-base text-gray-600 mb-4 leading-relaxed flex-1"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 + 0.4 }}
@@ -353,7 +355,7 @@ const CategoryCard = ({
                             </motion.p>
 
                             <motion.p
-                                className="text-xl text-blue-600 m-0 font-bold"
+                                className="text-2xl text-blue-600 m-0 font-bold mt-auto"
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{
@@ -373,7 +375,7 @@ const CategoryCard = ({
 
                         {/* Decorative corner element */}
                         <motion.div
-                            className="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-0"
+                            className="absolute top-3 right-3 w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-0"
                             whileHover={{
                                 opacity: 1,
                                 scale: [0, 1.2, 1],
@@ -389,7 +391,7 @@ const CategoryCard = ({
                 {[...Array(3)].map((_, i) => (
                     <motion.div
                         key={i}
-                        className="absolute w-2 h-2 bg-blue-400 rounded-full opacity-20"
+                        className="absolute w-3 h-3 bg-blue-400 rounded-full opacity-20"
                         animate={{
                             x: [0, 100, 200, 300],
                             y: [0, -50, -100, -150],
