@@ -26,7 +26,6 @@ const Products = () => {
         console.log(`View more for category: ${categoryId}`);
     };
 
-    // Animation variants
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -108,7 +107,6 @@ const Products = () => {
         }
     };
 
-    // Loading animation
     if (loading) {
         return (
             <motion.div
@@ -138,12 +136,11 @@ const Products = () => {
 
     return (
         <motion.div
-            className="w-full min-h-screen bg-gray-50"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
         >
-            <div className="w-full max-w-none px-6 py-8">
+            <div>
                 <AnimatePresence>
                     {productsData.map((category, categoryIndex) => (
                         <CategoryCard
@@ -163,7 +160,6 @@ const Products = () => {
     );
 };
 
-// Separate component for each category to optimize animations
 const CategoryCard = ({
     category,
     categoryIndex,
@@ -179,7 +175,7 @@ const CategoryCard = ({
     return (
         <motion.div
             ref={ref}
-            className="w-full mb-16 bg-white rounded-2xl px-8 py-10 shadow-md overflow-hidden"
+            className="mb-16 bg-white rounded-2xl px-8 py-10 shadow-md overflow-hidden"
             variants={categoryVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -191,7 +187,6 @@ const CategoryCard = ({
                 transition: { duration: 0.3 }
             }}
         >
-            {/* Header Animation */}
             <motion.div
                 className="flex justify-between items-center mb-8 w-full"
                 variants={{
@@ -261,7 +256,6 @@ const CategoryCard = ({
                 )}
             </motion.div>
 
-            {/* Full Width Products Grid */}
             <motion.div
                 className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8"
                 variants={{
@@ -283,7 +277,6 @@ const CategoryCard = ({
                             background: 'linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)'
                         }}
                     >
-                        {/* Animated background on hover */}
                         <motion.div
                             className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-0"
                             whileHover={{
@@ -292,7 +285,6 @@ const CategoryCard = ({
                             }}
                         />
 
-                        {/* Image Container */}
                         <motion.div
                             className="w-full h-48 overflow-hidden rounded-lg mb-4 bg-gray-100 relative"
                             whileHover={{
@@ -315,7 +307,6 @@ const CategoryCard = ({
                                 }}
                             />
 
-                            {/* Shimmer effect during load */}
                             <motion.div
                                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0"
                                 animate={{
@@ -330,7 +321,6 @@ const CategoryCard = ({
                             />
                         </motion.div>
 
-                        {/* Content - Flexible grow */}
                         <div className="relative z-10 flex-1 flex flex-col">
                             <motion.h4
                                 className="text-xl text-gray-800 mb-3 font-semibold leading-tight"
@@ -355,7 +345,7 @@ const CategoryCard = ({
                             </motion.p>
 
                             <motion.p
-                                className="text-2xl text-blue-600 m-0 font-bold mt-auto"
+                                className="text-2xl text-green-600 m-0 font-bold mt-auto"
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{
@@ -365,15 +355,13 @@ const CategoryCard = ({
                                 }}
                                 whileHover={{
                                     scale: 1.1,
-                                    color: "#1d4ed8",
                                     transition: { duration: 0.2 }
                                 }}
                             >
-                                ₹{item.price}
+                                ₹{item.price}/-
                             </motion.p>
                         </div>
 
-                        {/* Decorative corner element */}
                         <motion.div
                             className="absolute top-3 right-3 w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-0"
                             whileHover={{
@@ -386,7 +374,6 @@ const CategoryCard = ({
                 ))}
             </motion.div>
 
-            {/* Floating particles effect */}
             <motion.div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
                 {[...Array(3)].map((_, i) => (
                     <motion.div
