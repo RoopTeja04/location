@@ -25,9 +25,8 @@ const Header = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
-                    {/* Logo Section */}
                     <motion.div
                         className="flex-shrink-0"
                         whileHover={{ scale: 1.05 }}
@@ -41,20 +40,19 @@ const Header = () => {
                             >
                                 <span className="text-white font-bold text-lg">P</span>
                             </motion.div>
-                            <h1 className="text-white text-2xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+                            <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
                                 Priya Pickles
                             </h1>
                         </Link>
                     </motion.div>
 
-                    {/* Desktop Navigation */}
                     <nav className="hidden md:flex space-x-1 bg-gray-800 rounded-full p-1">
                         {navItems.map((item, index) => (
-                            <motion.div key={item.path} className="relative">
+                            <motion.div key={index} className="relative">
                                 <Link
                                     to={item.path}
                                     className={`
-                                        relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
+                                        relative px-8 py-2 rounded-full text-sm font-medium transition-all duration-300
                                         ${isActive(item.path)
                                             ? 'text-white bg-orange-500 shadow-lg shadow-orange-500/25'
                                             : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
@@ -74,7 +72,6 @@ const Header = () => {
                         ))}
                     </nav>
 
-                    {/* Auth Section */}
                     <div className="flex items-center space-x-4">
                         {!user ? (
                             <motion.div
@@ -99,7 +96,6 @@ const Header = () => {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.3 }}
                             >
-                                {/* User Profile */}
                                 <Link to="/account" className="flex items-center space-x-2 group">
                                     <motion.div
                                         className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center"
@@ -114,7 +110,6 @@ const Header = () => {
                                     </span>
                                 </Link>
 
-                                {/* Logout Button */}
                                 <motion.button
                                     onClick={logout}
                                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 shadow-md hover:shadow-lg"
@@ -126,7 +121,6 @@ const Header = () => {
                             </motion.div>
                         )}
 
-                        {/* Mobile Menu Button */}
                         <motion.button
                             className="md:hidden text-gray-300 hover:text-white p-2"
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -139,7 +133,6 @@ const Header = () => {
                     </div>
                 </div>
 
-                {/* Mobile Navigation */}
                 <motion.div
                     className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`}
                     initial={{ opacity: 0, height: 0 }}
@@ -170,7 +163,6 @@ const Header = () => {
                 </motion.div>
             </div>
 
-            {/* Gradient Border Bottom */}
             <motion.div
                 className="h-0.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent"
                 initial={{ scaleX: 0 }}
